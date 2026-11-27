@@ -78,7 +78,7 @@
   .ref { font-weight: 700; color: var(--ink); text-decoration: none; }
 
   .c1 { grid-column: 2; } .c2 { grid-column: 3; } .c3 { grid-column: 4; }
-  .r1 { grid-row: 1; } .r2 { grid-row: 2; }
+  .r1 { grid-row: 1; } .r2 { grid-row: 2; } .r12 { grid-row: 1 / span 2; }
 
   .arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
   .arrows path { fill: none; stroke: var(--ink); stroke-width: 2; }
@@ -134,7 +134,7 @@
   footer { border-top: 1px solid var(--line); padding: 18px 0 40px; color: var(--muted); font-size: 0.9rem; }
 
   /* Narrow screens: stack the board and drop the arrows; each card names its dependency */
-  @media (max-width: 960px) {
+  @media screen and (max-width: 960px) {
     .phase-row { display: none; }
     .lane { display: block; padding: 18px 16px 8px; }
     .lane-name { padding: 0 0 12px; }
@@ -147,7 +147,7 @@
   }
 
   @media print {
-    @page { size: letter landscape; margin: 0.35in; }
+    @page { size: letter landscape; margin: 0.3in; }
     html { font-size: 12px; }
     body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .site-nav { display: none; }
@@ -218,8 +218,8 @@
     <p class="sub">Transformation roadmap, Q4 2022 to Q2 2027</p>
     <dl class="team">
       <div><dt>Gina Green</dt><dd>Member A: Roadmap Sequencer and Site Editor</dd></div>
-      <div><dt>[Name]</dt><dd>Member B: Governance Designer</dd></div>
-      <div><dt>[Name]</dt><dd>Member C: Dashboard Designer</dd></div>
+      <div><dt>Prakash Panda</dt><dd>Member B: Governance Designer</dd></div>
+      <div><dt>Henry Pinzon</dt><dd>Member C: Dashboard Designer</dd></div>
     </dl>
     <p class="intro">Hasbro's CEO described 2025 as progress in the company's "evolution into a digital-first play and IP company" <a class="ref" href="#s19">[19]</a>. This roadmap sequences eight initiatives behind that shift, from the Blueprint 2.0 strategy in October 2022 through the Playing to Win plan that runs to 2027. Each initiative is placed by what it depends on, not by when Hasbro announced it. Two moves came before our window, Magic: The Gathering Arena and the D&amp;D Beyond acquisition, and we include them because later work builds on them. The window covers about four and a half years, longer than a typical 18 to 36 month plan, because we are reconstructing a transformation already under way rather than planning a new one.</p>
   </header>
@@ -239,7 +239,7 @@
       <div class="lane">
         <div class="lane-name">Digital play and fans<span>Wizards of the Coast</span></div>
 
-        <article class="deed crawl c1 r1" data-key="arena">
+        <article class="deed crawl c1 r12" data-key="arena">
           <h3 data-phase="Crawl">Magic: The Gathering Arena</h3>
           <p class="when">In place before Q4 2022 (PC 2019, mobile 2021)</p>
           <dl>
@@ -263,7 +263,7 @@
           <p class="src">Sources <a class="ref" href="#s3">[3]</a> <a class="ref" href="#s2">[2]</a> <a class="ref" href="#s7">[7]</a></p>
         </article>
 
-        <article class="deed run c3 r1" data-key="market">
+        <article class="deed run c3 r12" data-key="market">
           <h3 data-phase="Run">D&amp;D Beyond third-party marketplace</h3>
           <p class="when">Q1 2025 onward (first releases planned for the first half of 2025)</p>
           <dl>
@@ -300,12 +300,14 @@
           <p class="when">Q1 2023 to Q4 2023 (foundation); outsourcing expected to finish about Q4 2025</p>
           <dl>
             <dt>Creates</dt>
-            <dd>Modernized, partly outsourced processes and systems across IT, accounting, finance and HR. No Walk item depends on it; enterprise AI adoption uses it in Run <span class="num">5</span>.</dd>
+            <dd>Modernized, partly outsourced processes and systems across IT, accounting, finance and HR.</dd>
+            <dt>Why it is Crawl</dt>
+            <dd>No Walk initiative depends on it. It depends on nothing, and Enterprise AI adoption needs it in Run <span class="num">5</span>.</dd>
           </dl>
           <p class="src">Sources <a class="ref" href="#s14">[14]</a> <a class="ref" href="#s9">[9]</a></p>
         </article>
 
-        <article class="deed run c3 r1" data-key="ai">
+        <article class="deed run c3 r12" data-key="ai">
           <h3 data-phase="Run">Enterprise AI adoption</h3>
           <p class="when">Q1 2025 to Q1 2026, ongoing</p>
           <dl>
@@ -314,7 +316,7 @@
             <dt>Full scope</dt>
             <dd>Financial planning, forecasting, order management and supply chain operations.</dd>
             <dt>Organizational change</dt>
-            <dd>Each team chooses whether to use AI under company guidelines.</dd>
+            <dd>Hasbro lets each team choose whether to use AI under company guidelines. Scaling it also requires training, redesigned workflows in the four functions and adoption tracking.</dd>
           </dl>
           <p class="src">Sources <a class="ref" href="#s15">[15]</a> <a class="ref" href="#s14">[14]</a></p>
         </article>
@@ -331,7 +333,7 @@
 
         <article class="deed walk c2 r2" data-key="design">
           <h3 data-phase="Walk">Design acceleration</h3>
-          <p class="when">Q4 2022 to Q4 2025 (result reported Feb 2026)</p>
+          <p class="when">Q4 2023 to Q4 2025 (result reported Feb 2026); 3D printing on one line began earlier, in 2022</p>
           <dl>
             <dt>Builds on</dt>
             <dd>Global supply chain transformation <span class="num">4</span></dd>
@@ -369,7 +371,7 @@
     <div class="rationales">
       <article class="crawl">
         <h3>Crawl</h3>
-        <p>Three foundations had to come first. Magic: The Gathering Arena (PC 2019, mobile 2021) gave Wizards of the Coast a team that builds and runs a live digital game. Corporate process and systems modernization updated how IT, accounting, finance and HR work. Global supply chain transformation lowered logistics and production costs and introduced design-to-cost. Both operations workstreams also produced savings that Hasbro said it would reinvest in growth initiatives. Remove any one and something later loses its base: the digital experience Wizards needed to take on D&amp;D Beyond and new games, the design method, or the processes AI runs on.</p>
+        <p>Three foundations had to come first. Magic: The Gathering Arena (PC 2019, mobile 2021) gave Wizards of the Coast a team that builds and runs a live digital game, which D&amp;D Beyond and new games need. Global supply chain transformation cut costs and introduced design-to-cost, the method design acceleration builds on. Corporate process and systems modernization is the exception: no Walk initiative depends on it. It stays in Crawl because it depends on nothing, and Enterprise AI adoption in Run needs its modernized finance and back-office processes. Hasbro said savings from both operations workstreams would fund growth initiatives.</p>
       </article>
       <article class="walk">
         <h3>Walk</h3>
@@ -377,7 +379,7 @@
       </article>
       <article class="run">
         <h3>Run</h3>
-        <p>Run takes two Walk results to full scope, and each one needs organizational change. The D&amp;D Beyond third-party marketplace opens a platform Hasbro first grew with its own D&amp;D content to outside publishers, so Wizards has to work with those publishers as partners. Enterprise AI adoption carries AI from toy design into financial planning, forecasting, order management and supply chain operations. Hasbro reports the two together; treating design as the proving ground is our reading. The rollout relies on the back-office and supply chain work, and it changes how teams work: each chooses whether to use AI under company guidelines.</p>
+        <p>Run takes two Walk results to full scope, and each one needs organizational change. The D&amp;D Beyond third-party marketplace opens a platform Hasbro first grew with its own D&amp;D content to outside publishers, so Wizards has to work with those publishers as partners. Enterprise AI adoption carries AI from toy design into financial planning, forecasting, order management and supply chain operations. Hasbro reports the two together; treating design as the proving ground is our reading. It relies on the back-office and supply chain work, and scaling it requires training, redesigned workflows in all four functions and adoption tracking.</p>
       </article>
     </div>
   </section>
@@ -392,6 +394,8 @@
       <li>Hasbro's Q4 2024 remarks list AI under partnerships, while its 10-K and the Playing to Win release list it as transformation work. We follow the 10-K.</li>
       <li>Hasbro has not published a sales target for Exodus.</li>
       <li>Treating toy design as the proving ground for enterprise AI is our reading. Hasbro reports the two results together without linking them.</li>
+      <li>Training, workflow redesign and adoption tracking are what we think scaling AI requires. Hasbro's sources describe its responsible-use guidelines, not a change program.</li>
+      <li>3D printing for one product line began in 2022, before design-to-cost existed. We date design acceleration from Q4 2023, when it could build on that method.</li>
     </ul>
   </section>
 
