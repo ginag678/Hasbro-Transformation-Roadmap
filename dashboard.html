@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QBR Dashboard: Hasbro Playing to Win Transformation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1E2433;
+    --muted: #4B5466;
+    --paper: #F7F8FA;
+    --lane: #ECEFF4;
+    --line: #C9CFDA;
+    /* Phase colors, same as roadmap.html */
+    --crawl: #2B5D9B;
+    --walk: #E0A526;
+    --run: #B8352B;
+    /* Status colors */
+    --ok-bg: #DCFCE7; --ok-ink: #166534;
+    --risk-bg: #FEF3C7; --risk-ink: #8A3B05; --risk-line: #B45309;
+    --off-bg: #E4E4E7; --off-ink: #3F3F46;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 16px; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.45;
+  }
+  a { color: var(--crawl); }
+  a:focus-visible { outline: 3px solid var(--walk); outline-offset: 2px; }
+  .wrap { max-width: 1480px; margin: 0 auto; padding: 0 28px; }
+
+  /* Site navigation, same as roadmap.html */
+  .site-nav { border-bottom: 1px solid var(--line); background: #fff; }
+  .site-nav ul { list-style: none; margin: 0; padding: 14px 0; display: flex; gap: 26px; flex-wrap: wrap; }
+  .site-nav a { text-decoration: none; color: var(--muted); font-weight: 700; }
+  .site-nav a[aria-current="page"] { color: var(--ink); border-bottom: 3px solid var(--run); padding-bottom: 3px; }
+
+  main { display: flex; flex-direction: column; gap: 16px; padding: 24px 0 32px; }
+
+  /* Header */
+  .top { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: stretch; justify-content: space-between; }
+  .title { flex: 1 1 420px; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+  .eyebrow { margin: 0; font-size: 0.9rem; color: var(--muted); }
+  h1 { margin: 0; font-size: 2rem; line-height: 1.15; letter-spacing: -0.01em; }
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem; margin: 2px 0 0; padding: 0; list-style: none; }
+  .counts li.note { color: var(--muted); }
+
+  .health { flex: 1 1 400px; max-width: 520px; background: var(--risk-bg); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; color: #451A03; }
+  .health h2 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--risk-ink); }
+  .health p { margin: 0; font-size: 0.88rem; }
+  .health .big { font-size: 0.95rem; background: #fff; border: 1px solid var(--risk-line); }
+
+  .legend { flex: 0 1 290px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 0.78rem; color: var(--muted); display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+  .legend h2 { margin: 0; font-size: 0.85rem; color: var(--ink); }
+  .legend p { margin: 0; }
+  .legend .bar { --bar: var(--ink); }
+
+  /* Reading-order markers */
+  .step { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 0.75rem; font-weight: 700; flex: 0 0 auto; }
+
+  /* Status pills */
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+  .pill.ok { background: var(--ok-bg); color: var(--ok-ink); }
+  .pill.risk { background: var(--risk-bg); color: var(--risk-ink); }
+  .pill.off { background: var(--off-bg); color: var(--off-ink); }
+
+  /* Needs attention */
+  .attention { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; background: #fff; border: 2px solid var(--risk-line); border-radius: 10px; padding: 10px 16px; font-size: 0.88rem; }
+  .attention h2 { margin: 0; font-size: 0.95rem; color: var(--risk-ink); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .attention ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 28px; flex: 1 1 auto; }
+  .attention .go { font-weight: 700; color: var(--risk-ink); white-space: nowrap; }
+
+  /* Board: three phase columns plus decisions */
+  .board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(260px, 310px); gap: 16px; align-items: start; }
+  .phase { display: flex; flex-direction: column; gap: 10px; }
+  .phase.crawl { --ph: var(--crawl); --ph-text: var(--crawl); --ph-bar: var(--crawl); --ph-on: #fff; }
+  .phase.walk  { --ph: var(--walk);  --ph-text: #7A5600;      --ph-bar: #B8860B;      --ph-on: var(--ink); }
+  .phase.run   { --ph: var(--run);   --ph-text: var(--run);   --ph-bar: var(--run);   --ph-on: #fff; }
+  .phase-head { border-top: 6px solid var(--ph); padding-top: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .phase-head h2 { margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+  .phase-head p { margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 11px 13px; display: flex; flex-direction: column; gap: 6px; }
+  .card.alert { border: 2px solid var(--risk-line); background: #FFFBEB; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card h3 { margin: 0; font-size: 0.9rem; line-height: 1.3; }
+  .id { display: inline-block; font-size: 0.72rem; font-weight: 700; background: var(--ph); color: var(--ph-on); border-radius: 4px; padding: 1px 6px; margin-right: 4px; }
+  .kind { font-size: 0.72rem; font-weight: 400; color: var(--muted); margin-left: 2px; }
+  .card-mid { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .val { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .val strong { font-size: 1.75rem; line-height: 1.1; color: var(--ph-text); }
+  .tag { font-size: 0.7rem; font-weight: 700; border-radius: 4px; padding: 1px 6px; }
+  .tag.rep { background: #DBEAFE; color: #1E3A8A; }
+  .tag.third { background: var(--off-bg); color: var(--off-ink); }
+  .tag.est { background: var(--risk-bg); color: var(--risk-ink); }
+  .pct { text-align: right; line-height: 1.15; }
+  .pct strong { display: block; font-size: 1.05rem; }
+  .pct span { font-size: 0.7rem; color: var(--muted); }
+  .trend { margin: 0; font-size: 0.8rem; }
+  .trend .warn { color: var(--risk-ink); font-weight: 700; }
+  .meta { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 1px 10px; font-size: 0.74rem; color: var(--muted); border-top: 1px solid var(--lane); padding-top: 6px; }
+  .meta dt { font-weight: 700; color: var(--ink); }
+  .meta dt.ours { font-weight: 400; font-style: italic; color: var(--muted); }
+  .meta dd { margin: 0; }
+
+  /* Progress bar: fill = % of our checkpoint, capped at 150%; tick = checkpoint (100%) */
+  .bar { position: relative; height: 16px; border-radius: 3px; overflow: hidden;
+         background: linear-gradient(to right, #D9DEE7 0 50%, #E7EAF0 50% 60%, #F3F5F8 60% 100%);
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bar b { position: absolute; left: 0; top: 4px; height: 8px; background: var(--bar, var(--ph-bar)); border-radius: 0 2px 2px 0; }
+  .bar i { position: absolute; left: 66.6%; top: 0; width: 2px; height: 16px; background: var(--ink); }
+
+  /* Milestone track (for #8) */
+  .track { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); position: relative; font-size: 0.7rem; color: var(--muted); }
+  .track::before { content: ""; position: absolute; left: 7px; right: calc(33.3% - 7px); top: 6px; height: 2px; background: var(--line); }
+  .track li { position: relative; padding-top: 18px; line-height: 1.25; }
+  .track li::before { content: ""; position: absolute; left: 0; top: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ph-bar); background: #fff; }
+  .track li.done::before { background: var(--ph-bar); }
+  .track li b { color: var(--ink); display: block; }
+
+  /* Decisions */
+  .decisions { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .decisions header { border-top: 6px solid var(--ink); padding: 8px 14px 10px; border-bottom: 1px solid var(--line); }
+  .decisions header h2 { margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+  .decisions header p { margin: 3px 0 0; font-size: 0.78rem; color: var(--muted); }
+  .decisions ol { list-style: none; margin: 0; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .decision { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px; }
+  .decision .dh { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-weight: 700; }
+  .decision .q { margin: 0; }
+  .decision .rec { margin: 0; font-weight: 700; color: var(--ok-ink); }
+  .decision .rec.open { color: var(--muted); }
+  .decision .who { margin: 0; font-size: 0.74rem; color: var(--muted); }
+  .decision .id { margin: 0 0 0 3px; }
+  .id.crawl { --ph: var(--crawl); --ph-on: #fff; }
+  .id.walk { --ph: var(--walk); --ph-on: var(--ink); }
+  .id.run { --ph: var(--run); --ph-on: #fff; }
+
+  /* What changed + footer */
+  .changed { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px; font-size: 0.82rem; display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; }
+  .changed h2 { margin: 0; font-size: 0.9rem; white-space: nowrap; }
+  .changed ul { margin: 0; padding-left: 1.1em; display: flex; flex-wrap: wrap; gap: 2px 26px; }
+  footer.notes { font-size: 0.74rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 3px; }
+  footer.notes p { margin: 0; }
+
+  /* Laptop widths: decisions move below the three phase columns */
+  @media (max-width: 1240px) {
+    .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .decisions { grid-column: 1 / -1; }
+    .decisions ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .health { max-width: none; }
+  }
+  /* Narrow screens: one column */
+  @media (max-width: 860px) {
+    .wrap { padding: 0 16px; }
+    .board, .decisions ol { grid-template-columns: 1fr; }
+    h1 { font-size: 1.6rem; }
+    .legend { flex-basis: 100%; }
+  }
+
+  /* Print: one US Letter landscape page */
+  @media print {
+    @page { size: letter landscape; margin: 0.3in; }
+    html { font-size: 9px; }
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .site-nav { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    main { padding: 0; gap: 7px; }
+    .top { flex-wrap: nowrap; gap: 12px; }
+    .title { flex: 1 1 auto; }
+    h1 { font-size: 1.85rem; }
+    .health { flex: 0 0 390px; max-width: none; padding: 7px 11px; gap: 3px; }
+    .legend { flex: 0 0 230px; padding: 6px 10px; gap: 3px; }
+    .attention { padding: 5px 12px; }
+    .board { grid-template-columns: repeat(3, minmax(0, 1fr)) 220px; gap: 10px; }
+    .decisions { grid-column: auto; }
+    .decisions ol { display: flex; padding: 7px; gap: 6px; }
+    .decisions header { padding: 5px 10px 6px; }
+    .phase { gap: 6px; }
+    .phase-head { padding-top: 4px; border-top-width: 5px; }
+    .card { padding: 6px 9px; gap: 3px; break-inside: avoid; }
+    .card.alert { border-width: 1.5px; }
+    .val strong { font-size: 1.6rem; }
+    .bar { height: 12px; }
+    .bar b { top: 3px; height: 6px; }
+    .bar i { height: 12px; }
+    .meta { padding-top: 3px; }
+    .decision { padding: 6px 8px; gap: 2px; }
+    .changed { padding: 5px 12px; }
+    footer.notes { padding-top: 5px; gap: 1px; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Site">
+  <div class="wrap">
+    <ul>
+      <li><a href="index.html">About us</a></li>
+      <li><a href="roadmap.html">Roadmap</a></li>
+      <li><a href="raci.html">RACI</a></li>
+      <li><a href="dashboard.html" aria-current="page">QBR dashboard</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <header class="top">
+    <div class="title">
+      <p class="eyebrow">Quarterly business review, Q4 2026: results through Q3 2026</p>
+      <h1>Hasbro “Playing to Win” transformation</h1>
+      <ul class="counts" aria-label="Metric status summary">
+        <li><span class="pill ok">● 6 on track</span></li>
+        <li><span class="pill risk">▲ 2 at risk</span></li>
+        <li><span class="pill off">■ 0 off track</span></li>
+        <li class="note">8 metrics: 5 leading, 3 lagging. 5 reported, 1 third-party, 2 estimated.</li>
+      </ul>
+    </div>
+
+    <section class="health" aria-labelledby="health-h">
+      <h2 id="health-h"><span class="step">1</span>Overall health <span class="pill risk big">▲ At risk</span></h2>
+      <p>Crawl and Walk are on plan. Run is rated at risk on two <b>estimated</b> metrics that Hasbro does not report: AI adoption (#6, 45% vs. 57%) and the hours it frees (#7, derived from #6). Treat the rating as provisional until adoption is measured.</p>
+    </section>
+
+    <aside class="legend" aria-labelledby="legend-h">
+      <h2 id="legend-h">How to read each chart</h2>
+      <div class="bar" aria-hidden="true"><b style="width: 56%"></b><i></i></div>
+      <p>Bar = share of our Q3 checkpoint (black tick). Shading: under 75% off track, 75–90% at risk, 90% or more on track.</p>
+      <p><b>Hasbro target</b> = Hasbro’s published goal. <i>Our checkpoint</i> or <i>our target</i> = set by our team.</p>
+    </aside>
+  </header>
+
+  <section class="attention" aria-labelledby="att-h">
+    <h2 id="att-h"><span class="step">2</span>▲ Needs attention</h2>
+    <ul>
+      <li><b>#6 AI adoption: 45% vs. 57%</b> (79% of checkpoint, estimated). Owner: [role from RACI]</li>
+      <li><b>#7 AI hours: 300K vs. 375K</b> (80% of checkpoint, estimated). Owner: [role from RACI]</li>
+    </ul>
+    <span class="go">See decision 1 →</span>
+  </section>
+
+  <div class="board">
+
+    <!-- Crawl -->
+    <section class="phase crawl" aria-labelledby="crawl-h">
+      <div class="phase-head">
+        <div><h2 id="crawl-h"><span class="step">3</span>Crawl: foundation</h2><p>2 of 2 on track. Data confidence high (all reported).</p></div>
+        <span class="pill ok">● On track</span>
+      </div>
+
+      <article class="card">
+        <div class="card-top"><h3><span class="id">#1</span>Cumulative Operational Excellence gross savings through 2025 <span class="kind">Lagging</span></h3><span class="pill ok">● On track</span></div>
+        <div class="card-mid"><div class="val"><strong>$800M</strong><span class="tag rep">Reported</span></div><div class="pct"><strong>91%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 60.7%"></b><i></i></div>
+        <p class="trend">Cumulative through 2025, reported in Hasbro’s Feb 2026 remarks. About $905M including estimated 2026 savings.</p>
+        <dl class="meta">
+          <dt>Hasbro target</dt><dd>$1B gross savings by 2027</dd>
+          <dt class="ours">Our checkpoint</dt><dd>$875M by Q3 2026</dd>
+          <dt>Initiatives</dt><dd>Corporate process and systems modernization, including outsourcing; Global supply chain transformation</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="card-top"><h3><span class="id">#2</span>Inventory level vs. last year <span class="kind">Lagging</span></h3><span class="pill ok">● On track</span></div>
+        <div class="card-mid"><div class="val"><strong>−9.5%</strong><span class="tag rep">Reported</span></div><div class="pct"><strong>190%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 100%"></b><i></i></div>
+        <p class="trend">Year-over-year measure: $358.9M vs. $396.7M.</p>
+        <dl class="meta">
+          <dt class="ours">Our target</dt><dd>At least 5% below last year</dd>
+          <dt>Initiative</dt><dd>Global supply chain transformation</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+    </section>
+
+    <!-- Walk -->
+    <section class="phase walk" aria-labelledby="walk-h">
+      <div class="phase-head">
+        <div><h2 id="walk-h"><span class="step">3</span>Walk: deployment</h2><p>3 of 3 on track. Data confidence high (2 reported, 1 third-party).</p></div>
+        <span class="pill ok">● On track</span>
+      </div>
+
+      <article class="card">
+        <div class="card-top"><h3><span class="id">#3</span>D&amp;D Beyond registered-user growth <span class="kind">Leading</span></h3><span class="pill ok">● On track</span></div>
+        <div class="card-mid"><div class="val"><strong>+36%</strong><span class="tag third">Third-party</span></div><div class="pct"><strong>180%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 100%"></b><i></i></div>
+        <p class="trend">▲ About 22M accounts (late 2025) to about 30M (Jul 2026).</p>
+        <dl class="meta">
+          <dt class="ours">Our target</dt><dd>+20% a year</dd>
+          <dt>Initiative</dt><dd>D&amp;D Beyond acquisition</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="card-top"><h3><span class="id">#4</span>Concept-to-prototype time reduction <span class="kind">Leading</span></h3><span class="pill ok">● On track</span></div>
+        <div class="card-mid"><div class="val"><strong>80%</strong><span class="tag rep">Reported</span></div><div class="pct"><strong>100%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 66.7%"></b><i></i></div>
+        <p class="trend">Single reading (Feb 2026).</p>
+        <dl class="meta">
+          <dt class="ours">Our target</dt><dd>Keep at least 80%</dd>
+          <dt>Initiative</dt><dd>Design acceleration</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="card-top"><h3><span class="id">#8</span>Exodus launch schedule <span class="kind">Leading</span></h3><span class="pill ok">● On track</span></div>
+        <div class="card-mid"><div class="val"><strong>Apr 7, 2027</strong><span class="tag rep">Reported</span></div><div class="pct"><strong>On date</strong><span>at Q3 checkpoint</span></div></div>
+        <ol class="track" aria-label="Exodus milestones">
+          <li class="done"><b>Date set</b>Aug 2026</li>
+          <li class="done"><b>Reaffirmed</b>Q3 2026 call</li>
+          <li><b>Launch</b>Apr 7, 2027</li>
+        </ol>
+        <p class="trend">Date announced at Gamescom and held on the Q3 2026 call, with about 1M wishlists.</p>
+        <dl class="meta">
+          <dt>Hasbro target</dt><dd>Launch April 7, 2027</dd>
+          <dt class="ours">Our checkpoint</dt><dd>Date unchanged at Q3 2026 results (met)</dd>
+          <dt>Initiative</dt><dd>Self-published video games</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+    </section>
+
+    <!-- Run -->
+    <section class="phase run" aria-labelledby="run-h">
+      <div class="phase-head">
+        <div><h2 id="run-h"><span class="step">3</span>Run: scale</h2><p>1 of 3 on track. Data confidence low (2 of 3 estimated).</p></div>
+        <span class="pill risk">▲ At risk</span>
+      </div>
+
+      <article class="card">
+        <div class="card-top"><h3><span class="id">#5</span>Third-party publishers selling on D&amp;D Beyond <span class="kind">Leading</span></h3><span class="pill ok">● On track</span></div>
+        <div class="card-mid"><div class="val"><strong>15</strong><span class="tag rep">Reported</span></div><div class="pct"><strong>125%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 83.3%"></b><i></i></div>
+        <p class="trend">▲ 5 (Q1), 8 (Q2), 15 (Q3) partners releasing in 2026.</p>
+        <dl class="meta">
+          <dt class="ours">Our checkpoint</dt><dd>12 by Q3 2026</dd>
+          <dt class="ours">Our target</dt><dd>16 by end of 2026</dd>
+          <dt>Initiative</dt><dd>D&amp;D Beyond third-party marketplace</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+
+      <article class="card alert">
+        <div class="card-top"><h3><span class="id">#6</span>Employee AI adoption rate at 90 days <span class="kind">Leading</span></h3><span class="pill risk">▲ At risk</span></div>
+        <div class="card-mid"><div class="val"><strong>45%</strong><span class="tag est">Estimated</span></div><div class="pct"><strong>79%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 52.7%"></b><i></i></div>
+        <p class="trend">First estimate. <span class="warn">Hasbro does not report this; verify before acting.</span></p>
+        <dl class="meta">
+          <dt class="ours">Our target</dt><dd>57% weekly use (Gallup benchmark)</dd>
+          <dt>Initiative</dt><dd>Enterprise AI adoption</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+
+      <article class="card alert">
+        <div class="card-top"><h3><span class="id">#7</span>Lower-value work hours freed by AI <span class="kind">Lagging</span></h3><span class="pill risk">▲ At risk</span></div>
+        <div class="card-mid"><div class="val"><strong>300K</strong><span class="tag est">Estimated</span></div><div class="pct"><strong>80%</strong><span>of checkpoint</span></div></div>
+        <div class="bar" aria-hidden="true"><b style="width: 53.3%"></b><i></i></div>
+        <p class="trend">Derived from #6. <span class="warn">Hasbro does not report this; verify before acting.</span></p>
+        <dl class="meta">
+          <dt>Hasbro target</dt><dd>Free 1M+ hours of lower-value work (Feb 2026 remarks)</dd>
+          <dt class="ours">Our checkpoint</dt><dd>375K by Q3 2026, on a path to 1M by 2027</dd>
+          <dt>Initiative</dt><dd>Enterprise AI adoption</dd>
+          <dt>Owner</dt><dd>[role from RACI]</dd>
+        </dl>
+      </article>
+    </section>
+
+    <!-- Decisions -->
+    <section class="decisions" aria-labelledby="dec-h">
+      <header>
+        <h2 id="dec-h"><span class="step">4</span>Decisions required this quarter</h2>
+        <p>Owners and wording to be aligned with Prakash’s RACI</p>
+      </header>
+      <ol>
+        <li class="decision">
+          <div class="dh"><span>Decision 1</span><span><span class="id run">#6</span><span class="id run">#7</span></span></div>
+          <p class="q">Approve added adoption support (training, workflow redesign) for AI in the 4 target functions?</p>
+          <p class="rec">Recommended: yes</p>
+          <p class="who">Budget allocation. Accountable: [role from RACI]. Decide by: [date]</p>
+        </li>
+        <li class="decision">
+          <div class="dh"><span>Decision 2</span><span><span class="id walk">#8</span></span></div>
+          <p class="q">Keep 2027 investment in self-published video games at plan after this year’s digital games impairment?</p>
+          <p class="rec open">Recommended: [team to decide]</p>
+          <p class="who">Initiative prioritization. Accountable: [role from RACI]. Decide by: [date]</p>
+        </li>
+        <li class="decision">
+          <div class="dh"><span>Decision 3</span><span><span class="id run">#6</span></span></div>
+          <p class="q">Confirm which functions are in scope for the AI adoption target before the next QBR?</p>
+          <p class="rec">Recommended: yes</p>
+          <p class="who">Data governance and AI policy. Accountable: [role from RACI]. Decide by: [date]</p>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+
+  <section class="changed" aria-labelledby="chg-h">
+    <h2 id="chg-h">What changed this quarter</h2>
+    <ul>
+      <li>$56M digital games impairment (year to date)</li>
+      <li>About $55M of one-time tariff refunds lift Q3 margins</li>
+      <li>2026 revenue guidance raised to +7–9%</li>
+      <li>D&amp;D Beyond partner count nearly doubled in Q3 (8 to 15)</li>
+    </ul>
+  </section>
+
+  <footer class="notes">
+    <p><b>Read in order:</b> (1) overall health, (2) needs attention, (3) phase columns, (4) decisions. Metric numbers stay the same as in the metrics spreadsheet, so columns are not in numeric order.</p>
+    <p><b>Data tags:</b> Reported = Hasbro or D&amp;D Beyond figure. Third-party = news report of a Hasbro call. Estimated = illustrative; Hasbro does not report it. Bars cap at 150% of checkpoint.</p>
+    <p><b>Sources:</b> Hasbro Q3 2026 Form 8-K Ex. 99.1; Hasbro Q4 2025 management remarks (Feb 2026); Playing to Win press release (Feb 2025); Archetype Entertainment Exodus release-date announcement (Aug 2026) and Q3 2026 earnings call coverage; D&amp;D Beyond 2026 partnered content roadmaps; Gallup AI at work. Full list in the metrics spreadsheet.</p>
+    <p>Student project (USF ISM 6346) built from public information; not a Hasbro document.</p>
+  </footer>
+
+</main>
+</body>
+</html>
