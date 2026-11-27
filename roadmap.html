@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hasbro Transformation Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1E2433;
+    --muted: #4B5466;
+    --paper: #F7F8FA;
+    --lane: #ECEFF4;
+    --line: #C9CFDA;
+    --crawl: #2B5D9B;
+    --walk: #E0A526;
+    --run: #B8352B;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 16px; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  a { color: var(--crawl); }
+  a:focus-visible { outline: 3px solid var(--walk); outline-offset: 2px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+
+  /* Site navigation */
+  .site-nav { border-bottom: 1px solid var(--line); background: #fff; }
+  .site-nav ul { list-style: none; margin: 0; padding: 14px 0; display: flex; gap: 26px; flex-wrap: wrap; }
+  .site-nav a { text-decoration: none; color: var(--muted); font-weight: 700; }
+  .site-nav a[aria-current="page"] { color: var(--ink); border-bottom: 3px solid var(--run); padding-bottom: 3px; }
+
+  /* Header */
+  header.page { padding: 40px 0 8px; }
+  h1 { font-size: 2.4rem; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.01em; max-width: 22ch; }
+  .sub { font-size: 1.15rem; color: var(--muted); margin: 0 0 22px; }
+  .team { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 24px; margin: 0; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .team div { margin: 0; }
+  .team dt { font-weight: 700; }
+  .team dd { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .intro { max-width: 72ch; font-size: 1.05rem; margin: 24px 0 8px; }
+
+  /* Board */
+  .board-section { margin: 28px 0 10px; }
+  .board { position: relative; }
+  .phase-row, .lane { display: grid; grid-template-columns: 140px repeat(3, minmax(0, 1fr)); column-gap: 64px; }
+  .phase-row { margin-bottom: 10px; }
+  .phase-head { padding-top: 10px; border-top: 6px solid; }
+  .phase-head h2 { font-size: 1.25rem; margin: 0; }
+  .phase-head p { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+  .phase-head.crawl { border-color: var(--crawl); }
+  .phase-head.walk { border-color: var(--walk); }
+  .phase-head.run { border-color: var(--run); }
+
+  .lane { background: var(--lane); border-radius: 6px; padding: 22px 0 44px; margin-bottom: 16px; row-gap: 26px; grid-template-rows: auto auto; }
+  .lane-name { grid-column: 1; grid-row: 1 / span 2; padding-left: 16px; font-weight: 700; font-size: 1.05rem; align-self: start; }
+  .lane-name span { display: block; font-weight: 400; color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+
+  /* Cards styled after a title-deed card: colored band, ruled body */
+  .deed { background: #fff; border: 2px solid var(--ink); border-radius: 4px; box-shadow: 4px 4px 0 var(--ink); align-self: center; position: relative; z-index: 2; }
+  .deed h3 { margin: 0; padding: 9px 12px; font-size: 1rem; line-height: 1.25; color: #fff; border-bottom: 2px solid var(--ink); }
+  .deed.crawl h3 { background: var(--crawl); }
+  .deed.walk h3 { background: var(--walk); color: var(--ink); }
+  .deed.run h3 { background: var(--run); }
+  .deed .when { margin: 0; padding: 7px 12px; font-size: 0.85rem; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .deed dl { margin: 0; padding: 8px 12px 10px; font-size: 0.88rem; line-height: 1.4; }
+  .deed dt { font-weight: 700; margin-top: 6px; }
+  .deed dt:first-child { margin-top: 0; }
+  .deed dd { margin: 0; }
+  .deed .src { padding: 0 12px 9px; margin: 0; font-size: 0.78rem; color: var(--muted); }
+  .ref { font-weight: 700; color: var(--ink); text-decoration: none; }
+
+  .c1 { grid-column: 2; } .c2 { grid-column: 3; } .c3 { grid-column: 4; }
+  .r1 { grid-row: 1; } .r2 { grid-row: 2; }
+
+  .arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+  .arrows path { fill: none; stroke: var(--ink); stroke-width: 2; }
+  .arrows circle { fill: var(--ink); }
+  .arrows text { fill: #fff; font: 700 12px "Atkinson Hyperlegible", Arial, sans-serif; text-anchor: middle; dominant-baseline: central; }
+  #arrows-print { display: none; }
+  #arrows-print path { stroke-width: 1.4; }
+  #arrows-print text { font-size: 9px; }
+
+  /* Compact board. Print uses these same values (see @media print);
+     the script measures an off-screen copy with this class to place the print arrows. */
+  .board.compact { width: 988px; }
+  .board.compact .phase-row, .board.compact .lane { grid-template-columns: 78px repeat(3, minmax(0, 1fr)); column-gap: 44px; }
+  .board.compact .phase-row { margin-bottom: 4px; }
+  .board.compact .phase-head { padding-top: 3px; border-top-width: 5px; }
+  .board.compact .phase-head h2 { font-size: 13px; }
+  .board.compact .phase-head p { font-size: 9.5px; margin: 0; }
+  .board.compact .lane { padding: 6px 0 24px; row-gap: 8px; margin-bottom: 6px; }
+  .board.compact .lane-name { padding-left: 8px; font-size: 10.5px; }
+  .board.compact .lane-name span { font-size: 9px; margin-top: 2px; }
+  .board.compact .deed { box-shadow: 2px 2px 0 var(--ink); border-width: 1.5px; }
+  .board.compact .deed h3 { font-size: 10px; padding: 3px 7px; border-bottom-width: 1.5px; }
+  .board.compact .deed .when { font-size: 8.5px; padding: 2px 7px; }
+  .board.compact .deed dl { font-size: 8.5px; line-height: 1.25; padding: 3px 7px 4px; }
+  .board.compact .deed dt { margin-top: 1px; }
+  .board.compact .deed .src { font-size: 8px; padding: 0 7px 3px; }
+  .board.compact .num { width: 13px; height: 13px; font-size: 7.5px; }
+  .board-note { color: var(--muted); font-size: 0.92rem; margin: 4px 0 0; }
+
+  /* Text sections */
+  section.block { margin: 44px 0; }
+  section.block h2 { font-size: 1.5rem; margin: 0 0 12px; }
+  .lead { margin: 0 0 10px; color: var(--muted); }
+  table.deps { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.95rem; }
+  table.deps th, table.deps td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  table.deps th { background: var(--lane); }
+  table.deps td.n { width: 44px; font-weight: 700; }
+  .num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 0.8rem; }
+
+  .rationales { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .rationales article { background: #fff; border-top: 6px solid; padding: 14px 16px 16px; }
+  .rationales article.crawl { border-color: var(--crawl); }
+  .rationales article.walk { border-color: var(--walk); }
+  .rationales article.run { border-color: var(--run); }
+  .rationales h3 { margin: 0 0 6px; font-size: 1.1rem; }
+  .rationales p { margin: 0; font-size: 0.95rem; }
+
+  ul.gaps, ol.sources { max-width: 80ch; padding-left: 1.3em; }
+  ul.gaps li, ol.sources li { margin-bottom: 6px; }
+  ol.sources { list-style: none; padding-left: 0; }
+  ol.sources li { display: grid; grid-template-columns: 42px 1fr; }
+  ol.sources .sn { font-weight: 700; }
+  footer { border-top: 1px solid var(--line); padding: 18px 0 40px; color: var(--muted); font-size: 0.9rem; }
+
+  /* Narrow screens: stack the board and drop the arrows; each card names its dependency */
+  @media (max-width: 960px) {
+    .phase-row { display: none; }
+    .lane { display: block; padding: 18px 16px 8px; }
+    .lane-name { padding: 0 0 12px; }
+    .deed { margin-bottom: 18px; }
+    .deed h3::after { content: attr(data-phase); display: block; font-size: 0.8rem; font-weight: 400; opacity: 0.9; }
+    .arrows { display: none !important; }
+    .team, .rationales { grid-template-columns: 1fr; }
+    .team div { margin-bottom: 8px; }
+    h1 { font-size: 1.9rem; }
+  }
+
+  @media print {
+    @page { size: letter landscape; margin: 0.35in; }
+    html { font-size: 12px; }
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .site-nav { display: none; }
+    .wrap { max-width: none; padding: 0; }
+    header.page { padding-top: 0; }
+    h1 { font-size: 2rem; max-width: none; }
+    .intro { max-width: 95ch; }
+
+    /* The board gets a landscape page of its own, at the compact size */
+    .board-section { break-before: page; break-after: page; margin: 0; }
+    .board { width: 988px; }
+    .phase-row, .lane { grid-template-columns: 78px repeat(3, minmax(0, 1fr)); column-gap: 44px; }
+    .phase-row { margin-bottom: 4px; }
+    .phase-head { padding-top: 3px; border-top-width: 5px; }
+    .phase-head h2 { font-size: 13px; }
+    .phase-head p { font-size: 9.5px; margin: 0; }
+    .lane { padding: 6px 0 24px; row-gap: 8px; margin-bottom: 6px; }
+    .lane-name { padding-left: 8px; font-size: 10.5px; }
+    .lane-name span { font-size: 9px; margin-top: 2px; }
+    .deed { box-shadow: 2px 2px 0 var(--ink); border-width: 1.5px; }
+    .deed h3 { font-size: 10px; padding: 3px 7px; border-bottom-width: 1.5px; }
+    .deed .when { font-size: 8.5px; padding: 2px 7px; }
+    .deed dl { font-size: 8.5px; line-height: 1.25; padding: 3px 7px 4px; }
+    .deed dt { margin-top: 1px; }
+    .deed .src { font-size: 8px; padding: 0 7px 3px; }
+    .board .num { width: 13px; height: 13px; font-size: 7.5px; }
+    #arrows { display: none; }
+    #arrows-print { display: block; }
+    .board-note { display: none; }
+
+    /* Printed order: context and rationale, then the board on its own page, then detail */
+    .content { display: flex; flex-direction: column; }
+    .content > header { order: 1; }
+    .why-section { order: 2; }
+    .board-section { order: 3; }
+    .deps-section { order: 4; }
+    .gaps-section { order: 5; }
+    .src-section { order: 6; }
+    .content > footer { order: 7; }
+
+    section.block { margin: 0 0 18px; break-inside: avoid; }
+    section.block h2 { font-size: 1.25rem; margin-bottom: 8px; }
+    table.deps { font-size: 0.85rem; }
+    table.deps th, table.deps td { padding: 5px 8px; }
+    .rationales p { font-size: 0.85rem; }
+    ul.gaps, ol.sources { max-width: none; font-size: 0.85rem; }
+    footer { padding: 8px 0 0; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Site">
+  <div class="wrap">
+    <ul>
+      <li><a href="index.html">About us</a></li>
+      <li><a href="roadmap.html" aria-current="page">Roadmap</a></li>
+      <li><a href="raci.html">RACI</a></li>
+      <li><a href="dashboard.html">QBR dashboard</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="wrap content">
+  <header class="page">
+    <h1>Hasbro: from toymaker to digital-first play company</h1>
+    <p class="sub">Transformation roadmap, Q4 2022 to Q2 2027</p>
+    <dl class="team">
+      <div><dt>Gina Green</dt><dd>Member A: Roadmap Sequencer and Site Editor</dd></div>
+      <div><dt>[Name]</dt><dd>Member B: Governance Designer</dd></div>
+      <div><dt>[Name]</dt><dd>Member C: Dashboard Designer</dd></div>
+    </dl>
+    <p class="intro">Hasbro's CEO described 2025 as progress in the company's "evolution into a digital-first play and IP company" <a class="ref" href="#s19">[19]</a>. This roadmap sequences eight initiatives behind that shift, from the Blueprint 2.0 strategy in October 2022 through the Playing to Win plan that runs to 2027. Each initiative is placed by what it depends on, not by when Hasbro announced it. Two moves came before our window, Magic: The Gathering Arena and the D&amp;D Beyond acquisition, and we include them because later work builds on them. The window covers about four and a half years, longer than a typical 18 to 36 month plan, because we are reconstructing a transformation already under way rather than planning a new one.</p>
+  </header>
+
+  <section class="board-section" aria-label="Roadmap">
+    <div class="board" id="board">
+      <svg id="arrows" class="arrows" aria-hidden="true"></svg>
+      <svg id="arrows-print" class="arrows" aria-hidden="true"></svg>
+
+      <div class="phase-row">
+        <div></div>
+        <div class="phase-head crawl"><h2>Crawl</h2><p>Foundations that later work needs</p></div>
+        <div class="phase-head walk"><h2>Walk</h2><p>Limited deployment: one brand, function or set of titles</p></div>
+        <div class="phase-head run"><h2>Run</h2><p>Full scope, with organizational change</p></div>
+      </div>
+
+      <div class="lane">
+        <div class="lane-name">Digital play and fans<span>Wizards of the Coast</span></div>
+
+        <article class="deed crawl c1 r1" data-key="arena">
+          <h3 data-phase="Crawl">Magic: The Gathering Arena</h3>
+          <p class="when">In place before Q4 2022 (PC 2019, mobile 2021)</p>
+          <dl>
+            <dt>Creates for Walk</dt>
+            <dd>An in-house Wizards of the Coast team that builds and runs a live digital game.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s14">[14]</a> <a class="ref" href="#s1">[1]</a></p>
+        </article>
+
+        <article class="deed walk c2 r1" data-key="ddb">
+          <h3 data-phase="Walk">D&amp;D Beyond acquisition</h3>
+          <p class="when">Q2 2022 (closed May 19); growth measured through Q4 2022</p>
+          <dl>
+            <dt>Builds on</dt>
+            <dd>Magic: The Gathering Arena <span class="num">1</span></dd>
+            <dt>Limited scope</dt>
+            <dd>One brand, D&amp;D, on one digital platform.</dd>
+            <dt>Ready to scale when</dt>
+            <dd>User growth of more than 20% after the close.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s3">[3]</a> <a class="ref" href="#s2">[2]</a> <a class="ref" href="#s7">[7]</a></p>
+        </article>
+
+        <article class="deed run c3 r1" data-key="market">
+          <h3 data-phase="Run">D&amp;D Beyond third-party marketplace</h3>
+          <p class="when">Q1 2025 onward (first releases planned for the first half of 2025)</p>
+          <dl>
+            <dt>Scales</dt>
+            <dd>D&amp;D Beyond acquisition <span class="num">3</span></dd>
+            <dt>Full scope</dt>
+            <dd>Outside publishers selling their content on D&amp;D Beyond.</dd>
+            <dt>Organizational change</dt>
+            <dd>Wizards manages outside publishers as partners on its own platform.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s13">[13]</a> <a class="ref" href="#s16">[16]</a></p>
+        </article>
+
+        <article class="deed walk c2 r2" data-key="games">
+          <h3 data-phase="Walk">Self-published video games</h3>
+          <p class="when">Q1 2025 to Q2 2027 (Exodus launch April 2027)</p>
+          <dl>
+            <dt>Builds on</dt>
+            <dd>Magic: The Gathering Arena <span class="num">2</span></dd>
+            <dt>Limited scope</dt>
+            <dd>A first set of titles: Exodus and Warlock, both planned for 2027.</dd>
+            <dt>Ready to scale when</dt>
+            <dd>Exodus launch sales meet plan. Hasbro has not published a target.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s15">[15]</a> <a class="ref" href="#s13">[13]</a> <a class="ref" href="#s14">[14]</a></p>
+        </article>
+      </div>
+
+      <div class="lane">
+        <div class="lane-name">Operations and design<span>Hasbro enterprise</span></div>
+
+        <article class="deed crawl c1 r1" data-key="corp">
+          <h3 data-phase="Crawl">Corporate process and systems modernization, including outsourcing</h3>
+          <p class="when">Q1 2023 to Q4 2023 (foundation); outsourcing expected to finish about Q4 2025</p>
+          <dl>
+            <dt>Creates</dt>
+            <dd>Modernized, partly outsourced processes and systems across IT, accounting, finance and HR. No Walk item depends on it; enterprise AI adoption uses it in Run <span class="num">5</span>.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s14">[14]</a> <a class="ref" href="#s9">[9]</a></p>
+        </article>
+
+        <article class="deed run c3 r1" data-key="ai">
+          <h3 data-phase="Run">Enterprise AI adoption</h3>
+          <p class="when">Q1 2025 to Q1 2026, ongoing</p>
+          <dl>
+            <dt>Scales</dt>
+            <dd>Design acceleration's use of AI <span class="num">7</span>, and relies on the back-office <span class="num">5</span> and supply chain <span class="num">6</span> work.</dd>
+            <dt>Full scope</dt>
+            <dd>Financial planning, forecasting, order management and supply chain operations.</dd>
+            <dt>Organizational change</dt>
+            <dd>Each team chooses whether to use AI under company guidelines.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s15">[15]</a> <a class="ref" href="#s14">[14]</a></p>
+        </article>
+
+        <article class="deed crawl c1 r2" data-key="supply">
+          <h3 data-phase="Crawl">Global supply chain transformation</h3>
+          <p class="when">Q4 2022 to Q3 2023 (foundation); work continues through 2026</p>
+          <dl>
+            <dt>Creates for Walk</dt>
+            <dd>A design-to-cost method, first used on the JENGA redesign <span class="num">4</span>. Also lower logistics and production costs and fewer SKUs <span class="num">6</span>.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s14">[14]</a> <a class="ref" href="#s8">[8]</a> <a class="ref" href="#s13">[13]</a></p>
+        </article>
+
+        <article class="deed walk c2 r2" data-key="design">
+          <h3 data-phase="Walk">Design acceleration</h3>
+          <p class="when">Q4 2022 to Q4 2025 (result reported Feb 2026)</p>
+          <dl>
+            <dt>Builds on</dt>
+            <dd>Global supply chain transformation <span class="num">4</span></dd>
+            <dt>Limited scope</dt>
+            <dd>Toy design.</dd>
+            <dt>Ready to scale when</dt>
+            <dd>About 80% less time from concept to physical prototype, using AI-assisted design and 3D printing.</dd>
+          </dl>
+          <p class="src">Sources <a class="ref" href="#s15">[15]</a> <a class="ref" href="#s7">[7]</a> <a class="ref" href="#s14">[14]</a></p>
+        </article>
+      </div>
+    </div>
+    <p class="board-note">Numbered arrows match the dependency table below. Bracketed numbers refer to the source list at the end of the page.</p>
+  </section>
+
+  <section class="block deps-section" aria-labelledby="deps-h">
+    <h2 id="deps-h">How the initiatives depend on each other</h2>
+    <p class="lead">Each number matches an arrow on the roadmap.</p>
+    <table class="deps">
+      <thead><tr><th>#</th><th>From</th><th>To</th><th>Enables</th></tr></thead>
+      <tbody>
+        <tr><td class="n"><span class="num">1</span></td><td>Magic: The Gathering Arena</td><td>D&amp;D Beyond acquisition</td><td>A team that already runs a live digital game and can take on a digital platform</td></tr>
+        <tr><td class="n"><span class="num">2</span></td><td>Magic: The Gathering Arena</td><td>Self-published video games</td><td>In-house experience building, launching and running a live digital game</td></tr>
+        <tr><td class="n"><span class="num">3</span></td><td>D&amp;D Beyond acquisition</td><td>D&amp;D Beyond third-party marketplace</td><td>An owned D&amp;D platform with close to 10 million registered users that outside publishers can sell to</td></tr>
+        <tr><td class="n"><span class="num">4</span></td><td>Global supply chain transformation</td><td>Design acceleration</td><td>A design-to-cost method, first used on the JENGA redesign, that design teams can apply across the product line</td></tr>
+        <tr><td class="n"><span class="num">5</span></td><td>Corporate process and systems modernization, including outsourcing</td><td>Enterprise AI adoption</td><td>Modernized finance, accounting, IT and HR processes and systems for AI to run on in financial planning and forecasting</td></tr>
+        <tr><td class="n"><span class="num">6</span></td><td>Global supply chain transformation</td><td>Enterprise AI adoption</td><td>Simpler, lower-cost supply chain processes, with fewer SKUs and more diverse sourcing, that AI can then be applied to in supply chain operations</td></tr>
+        <tr><td class="n"><span class="num">7</span></td><td>Design acceleration</td><td>Enterprise AI adoption</td><td>A proven AI result in one function, about 80% faster from concept to prototype, before AI goes company-wide</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="block why-section" aria-labelledby="why-h">
+    <h2 id="why-h">Why this order</h2>
+    <div class="rationales">
+      <article class="crawl">
+        <h3>Crawl</h3>
+        <p>Three foundations had to come first. Magic: The Gathering Arena (PC 2019, mobile 2021) gave Wizards of the Coast a team that builds and runs a live digital game. Corporate process and systems modernization updated how IT, accounting, finance and HR work. Global supply chain transformation lowered logistics and production costs and introduced design-to-cost. Both operations workstreams also produced savings that Hasbro said it would reinvest in growth initiatives. Remove any one and something later loses its base: the digital experience Wizards needed to take on D&amp;D Beyond and new games, the design method, or the processes AI runs on.</p>
+      </article>
+      <article class="walk">
+        <h3>Walk</h3>
+        <p>Each Walk initiative puts a Crawl capability to work in one limited area. The D&amp;D Beyond acquisition extended Wizards' digital ecosystem to a single brand, and users grew more than 20% after the deal closed. Design acceleration applied design-to-cost, 3D printing and then AI to toy design, cutting the time from concept to physical prototype by roughly 80%. Self-published video games apply Wizards' in-house game experience to a first set of titles, starting with Exodus in April 2027. The first two have measured results that justify scaling in Run; the games still have to prove themselves.</p>
+      </article>
+      <article class="run">
+        <h3>Run</h3>
+        <p>Run takes two Walk results to full scope, and each one needs organizational change. The D&amp;D Beyond third-party marketplace opens a platform Hasbro first grew with its own D&amp;D content to outside publishers, so Wizards has to work with those publishers as partners. Enterprise AI adoption carries AI from toy design into financial planning, forecasting, order management and supply chain operations. Hasbro reports the two together; treating design as the proving ground is our reading. The rollout relies on the back-office and supply chain work, and it changes how teams work: each chooses whether to use AI under company guidelines.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="block gaps-section" aria-labelledby="gaps-h">
+    <h2 id="gaps-h">Gaps in the public record</h2>
+    <ul class="gaps">
+      <li>Hasbro's 10-K and its December 2023 8-K do not say which corporate functions were outsourced or to which provider.</li>
+      <li>The start date of the multi-year supply chain initiative is not stated. Our Crawl window covers its first measured savings.</li>
+      <li>Only trade press confirms the D&amp;D Beyond marketplace launch. Hasbro's Q4 2025 remarks mention D&amp;D Beyond growth but not the marketplace.</li>
+      <li>The 80% design result comes from management remarks on an earnings call, not from a reported metric.</li>
+      <li>Hasbro's Q4 2024 remarks list AI under partnerships, while its 10-K and the Playing to Win release list it as transformation work. We follow the 10-K.</li>
+      <li>Hasbro has not published a sales target for Exodus.</li>
+      <li>Treating toy design as the proving ground for enterprise AI is our reading. Hasbro reports the two results together without linking them.</li>
+    </ul>
+  </section>
+
+  <section class="block src-section" aria-labelledby="src-h">
+    <h2 id="src-h">Sources</h2>
+    <ol class="sources">
+      <li id="s1"><span class="sn">[1]</span><span>Hasbro, "Hasbro to Acquire D&amp;D Beyond from Fandom," press release, April 13, 2022. <a href="https://investor.hasbro.com/node/34341">investor.hasbro.com/node/34341</a></span></li>
+      <li id="s2"><span class="sn">[2]</span><span>Hasbro, "Hasbro Completes Acquisition of D&amp;D Beyond from Fandom," press release, May 19, 2022. <a href="https://investor.hasbro.com/node/34616">investor.hasbro.com/node/34616</a></span></li>
+      <li id="s3"><span class="sn">[3]</span><span>Hasbro, Q2 2022 results, Form 8-K Exhibit 99.1, July 19, 2022. <a href="https://www.sec.gov/Archives/edgar/data/46080/000004608022000096/exhibit991q22022.htm">sec.gov</a></span></li>
+      <li id="s4"><span class="sn">[4]</span><span>Hasbro, Investor Day press release (Blueprint 2.0), October 4, 2022. <a href="https://hasbro.gcs-web.com/node/35041">hasbro.gcs-web.com/node/35041</a></span></li>
+      <li id="s7"><span class="sn">[7]</span><span>Hasbro, Q4 and full year 2022 management remarks, February 16, 2023, pp. 2, 4 and 8. <a href="https://corp.hasbro.com/static-files/0e10a014-00f9-4511-b62b-be47e0e7b956">corp.hasbro.com</a></span></li>
+      <li id="s8"><span class="sn">[8]</span><span>Hasbro, Q3 2023 management remarks, October 26, 2023, pp. 2, 3 and 6. <a href="https://corp.hasbro.com/static-files/e4ea25ee-9afa-4e94-9467-443df121a4c7">corp.hasbro.com</a></span></li>
+      <li id="s9"><span class="sn">[9]</span><span>Hasbro, Form 8-K on restructuring, event of December 9, 2023. <a href="https://sec.gov/Archives/edgar/data/46080/000004608023000097/has-20231209.htm">sec.gov</a></span></li>
+      <li id="s12"><span class="sn">[12]</span><span>Hasbro, "Hasbro Unveils New Strategy: Playing to Win," press release, February 20, 2025. <a href="https://corp.hasbro.com/node/37001">corp.hasbro.com/node/37001</a></span></li>
+      <li id="s13"><span class="sn">[13]</span><span>Hasbro, Q4 and full year 2024 management remarks, February 20, 2025, pp. 5, 7 and 12. <a href="https://corp.hasbro.com/static-files/32a267bf-241b-4541-91ab-7745ed17693d">corp.hasbro.com</a></span></li>
+      <li id="s14"><span class="sn">[14]</span><span>Hasbro, Form 10-K for fiscal 2024, Item 1 Business (pp. 6 to 16), filed February 27, 2025. <a href="https://www.sec.gov/Archives/edgar/data/46080/000004608025000027/has-20241229.htm">sec.gov</a></span></li>
+      <li id="s15"><span class="sn">[15]</span><span>Hasbro, Q4 and full year 2025 management remarks, February 10, 2026, pp. 4, 5, 7 and 8. <a href="https://corp.hasbro.com/static-files/688a9e7f-b2c8-4f10-b4fb-a516aa30dd2b">corp.hasbro.com</a></span></li>
+      <li id="s16"><span class="sn">[16]</span><span>ICv2, report on D&amp;D Beyond third-party partners from the D&amp;D Direct presentation. <a href="https://icv2.com/print/article/57674">icv2.com</a></span></li>
+      <li id="s19"><span class="sn">[19]</span><span>Hasbro, "Hasbro Reports Fourth Quarter and Full Year 2025 Financial Results," press release, February 10, 2026. <a href="https://newsroom.hasbro.com/node/36306">newsroom.hasbro.com/node/36306</a></span></li>
+    </ol>
+  </section>
+
+  <footer>ISM6346 Digital Transformation, Week 6 group activity. Source numbers match the team's reference list.</footer>
+</div>
+
+<script>
+(function () {
+  // [from, to, number, start fraction, end side, end fraction, route]
+  var deps = [
+    ["arena",  "ddb",    1, 0.35, "left",   0.40, "curve"],
+    ["arena",  "games",  2, 0.75, "left",   0.40, "curve"],
+    ["ddb",    "market", 3, 0.45, "left",   0.45, "curve"],
+    ["supply", "design", 4, 0.50, "left",   0.40, "curve"],
+    ["corp",   "ai",     5, 0.50, "left",   0.30, "curve"],
+    ["supply", "ai",     6, 0.55, "bottom", 0.50, "under"],
+    ["design", "ai",     7, 0.40, "left",   0.72, "curve"]
+  ];
+  var NS = "http://www.w3.org/2000/svg";
+
+  function cubicPoint(p0, p1, p2, p3, t) {
+    var u = 1 - t;
+    return {
+      x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+      y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
+    };
+  }
+
+  function el(name, attrs) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // Draw the arrows for `board` into `svg`, with `scale` 1 for screen and smaller for print
+  function drawInto(svg, board, scale) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var b = board.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + b.width + " " + b.height);
+    var id = svg.id + "-head";
+    var defs = el("defs", {});
+    var marker = el("marker", { id: id, viewBox: "0 0 10 10", refX: "9", refY: "5",
+      markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" });
+    marker.appendChild(el("path", { d: "M0,0 L10,5 L0,10 z", style: "fill:#1E2433;stroke:none" }));
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    function box(key) {
+      var r = board.querySelector('[data-key="' + key + '"]').getBoundingClientRect();
+      return { left: r.left - b.left, right: r.right - b.left, top: r.top - b.top,
+               bottom: r.bottom - b.top, width: r.width, height: r.height };
+    }
+    var gapOut = 3 * scale, gapIn = 7 * scale, r = 10 * scale;
+
+    deps.forEach(function (d) {
+      var s = box(d[0]), t = box(d[1]);
+      var path = el("path", {}), m;
+      if (d[6] === "under") {
+        var design = box("design");
+        var low = Math.max(s.bottom, design.bottom) + 16 * scale;
+        var x0 = s.left + s.width * d[3], y0 = s.bottom + gapOut;
+        var x3 = t.left + t.width * d[5], y3 = t.bottom + gapIn;
+        path.setAttribute("d", "M" + x0 + "," + y0 + " L" + x0 + "," + (low - r) +
+          " Q" + x0 + "," + low + " " + (x0 + r) + "," + low +
+          " L" + (x3 - r) + "," + low + " Q" + x3 + "," + low + " " + x3 + "," + (low - r) +
+          " L" + x3 + "," + y3);
+        m = { x: (x0 + x3) / 2, y: low };
+      } else {
+        var p0 = { x: s.right + gapOut, y: s.top + s.height * d[3] };
+        var p3 = { x: t.left - gapIn, y: t.top + t.height * d[5] };
+        var dx = Math.max(24 * scale, (p3.x - p0.x) * 0.45);
+        var p1 = { x: p0.x + dx, y: p0.y }, p2 = { x: p3.x - dx, y: p3.y };
+        path.setAttribute("d", "M" + p0.x + "," + p0.y + " C" + p1.x + "," + p1.y + " " +
+          p2.x + "," + p2.y + " " + p3.x + "," + p3.y);
+        m = cubicPoint(p0, p1, p2, p3, 0.5);
+      }
+      path.setAttribute("marker-end", "url(#" + id + ")");
+      svg.appendChild(path);
+      svg.appendChild(el("circle", { cx: m.x, cy: m.y, r: 11 * scale }));
+      var tx = el("text", { x: m.x, y: m.y });
+      tx.textContent = d[2];
+      svg.appendChild(tx);
+    });
+  }
+
+  function drawScreen() {
+    var board = document.getElementById("board");
+    var svg = document.getElementById("arrows");
+    if (!board || !svg || getComputedStyle(svg).display === "none") return;
+    drawInto(svg, board, 1);
+  }
+
+  // Measure an off-screen compact copy of the board, which matches the printed layout
+  function drawPrint() {
+    var board = document.getElementById("board");
+    var target = document.getElementById("arrows-print");
+    if (!board || !target) return;
+    var copy = board.cloneNode(true);
+    copy.removeAttribute("id");
+    copy.querySelectorAll("svg").forEach(function (n) { n.parentNode.removeChild(n); });
+    copy.classList.add("compact");
+    copy.style.position = "absolute";
+    copy.style.left = "-20000px";
+    copy.style.top = "0";
+    copy.setAttribute("aria-hidden", "true");
+    var holder = el("svg", {});
+    document.body.appendChild(copy);
+    drawInto(holder, copy, 0.75);
+    while (target.firstChild) target.removeChild(target.firstChild);
+    target.setAttribute("viewBox", holder.getAttribute("viewBox"));
+    while (holder.firstChild) target.appendChild(holder.firstChild);
+    var head = target.querySelector("marker");
+    if (head) head.id = "arrows-print-head";
+    target.querySelectorAll("path[marker-end]").forEach(function (p) {
+      p.setAttribute("marker-end", "url(#arrows-print-head)");
+    });
+    document.body.removeChild(copy);
+  }
+
+  function drawAll() { drawScreen(); drawPrint(); }
+  window.drawArrows = drawAll;
+  window.addEventListener("load", drawAll);
+  window.addEventListener("resize", drawScreen);
+  window.addEventListener("beforeprint", drawPrint);
+  if (window.ResizeObserver) new ResizeObserver(drawScreen).observe(document.getElementById("board"));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll);
+})();
+</script>
+</body>
+</html>
